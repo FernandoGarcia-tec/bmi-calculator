@@ -1,75 +1,152 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { useState } from 'react';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from 'react-native';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+export default function App() {
+  const [weight, setWeight] = useState('');
+  const [height, setHeight] = useState('');
+  const [bmi, setBmi] = useState('');
+  const [category, setCategory] = useState('');
 
-export default function HomeScreen() {
+  const calculateBMI = () => {
+    const weightFloat = parseFloat(weight);
+    const heightFloat = parseFloat(height);
+
+    if (!weightFloat || !heightFloat) {
+      setBmi('Invalid');
+      setCategory('');
+      return;
+    }
+
+    const bmiValue = weightFloat / (heightFloat * heightFloat);
+    const roundedBMI = bmiValue.toFixed(2);
+    setBmi(roundedBMI);
+
+    let bmiCategory = '';
+    if (bmiValue < 18.5) {
+      bmiCategory = 'Underweight';
+    } else if (bmiValue < 25) {
+      bmiCategory = 'Normal';
+    } else if (bmiValue < 30) {
+      bmiCategory = 'Overweight';
+    } else {
+      bmiCategory = 'Obese';
+    }
+
+    setCategory(bmiCategory);
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <View style={styles.calculator}>
+        <Text style={styles.screenTitle}>BMI</Text>
+
+        <TextInput
+          style={styles.input}
+          placeholder="Weight (kg)"
+          placeholderTextColor="#888"
+          keyboardType="numeric"
+          value={weight}
+          onChangeText={setWeight}
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+
+        <TextInput
+          style={styles.input}
+          placeholder="Height (m)"
+          placeholderTextColor="#888"
+          keyboardType="numeric"
+          value={height}
+          onChangeText={setHeight}
+        />
+
+        <TouchableOpacity style={styles.button} onPress={calculateBMI}>
+          <Text style={styles.buttonText}>CALCULATE</Text>
+        </TouchableOpacity>
+
+        {bmi !== '' && (
+          <View style={styles.resultBox}>
+            <Text style={styles.resultText}>BMI: {bmi}</Text>
+            <Text style={styles.resultCategory}>{category}</Text>
+          </View>
+        )}
+      </View>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
+  container: {
+    flex: 1,
+    backgroundColor: '#202020',
+    justifyContent: 'center',
     alignItems: 'center',
-    gap: 8,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  calculator: {
+    width: 300,
+    backgroundColor: '#303030',
+    borderRadius: 24,
+    padding: 24,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.4,
+    shadowRadius: 10,
+    elevation: 10,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  screenTitle: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#00E676',
+    marginBottom: 20,
+  },
+  input: {
+    width: '100%',
+    height: 50,
+    backgroundColor: '#424242',
+    borderRadius: 10,
+    color: '#fff',
+    fontSize: 18,
+    paddingHorizontal: 15,
+    marginVertical: 8,
+  },
+  button: {
+    width: '100%',
+    backgroundColor: '#00E676',
+    borderRadius: 10,
+    paddingVertical: 14,
+    marginTop: 16,
+  },
+  buttonText: {
+    color: '#000',
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 18,
+  },
+  resultBox: {
+    marginTop: 24,
+    alignItems: 'center',
+    padding: 12,
+    backgroundColor: '#424242',
+    borderRadius: 12,
+    width: '100%',
+  },
+  resultText: {
+    fontSize: 22,
+    color: '#fff',
+    fontWeight: '600',
+  },
+  resultCategory: {
+    fontSize: 18,
+    color: '#90CAF9',
+    marginTop: 4,
   },
 });
