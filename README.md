@@ -3,4 +3,4 @@ In this guided practice, you will create a simple Android application using Reac
 calculates a person’s Body Mass Index (BMI) based on their weight and height. The application
 will also display the BMI category (e.g., Underweight, Normal, Overweight, Obese).
 
-![Captura de pantalla de la aplicación BMI Calculator](assets/images/captura.png)
+![Captura de pantalla de la aplicación BMI Calculator](assets/images/cap.png)
